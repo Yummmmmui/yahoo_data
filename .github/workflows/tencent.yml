@@ -21,7 +21,7 @@ jobs:
         secret_id: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
         secret_key: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
         tke_region: ap-guangzhou
-        cluster_id: cls-9oukskfs
+        cluster_id: cls-4m9d09vg
 
     - name: Login TKE Registry
       run: |
