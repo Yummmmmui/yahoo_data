@@ -25,14 +25,13 @@ jobs:
 
     - name: Login TKE Registry
       run: |
-        docker login -u ${{ secrets.TENCENT_CLOUD_SECRET_ID }} -p ${{ secrets.TENCENT_CLOUD_SECRET_KEY }} ccr.ccs.tencentyun.com
+        echo "${{ secrets.TENCENT_CLOUD_SECRET_KEY }}" | docker login -u ${{ secrets.TENCENT_CLOUD_SECRET_ID }} --password-stdin ccr.ccs.tencentyun.com
 
     - name: Build and Push
       run: |
         docker build -t ccr.ccs.tencentyun.com/1223/yahoo_data:latest .
         docker push ccr.ccs.tencentyun.com/1223/yahoo_data:latest
 
-    # 4. 直接在 K8S 里部署您的 7 个脚本
     - name: Deploy to K8S
       run: |
         kubectl apply -f deployment.yml
