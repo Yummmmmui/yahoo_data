@@ -23,15 +23,7 @@ jobs:
         tke_region: ${{ env.TKE_REGION }}
         cluster_id: ${{ env.TKE_CLUSTER_ID }}
 
-    - name: Login TKE Registry
-      run: |
-        echo "${{ secrets.TENCENT_CLOUD_SECRET_KEY }}" | docker login -u 100044904888 --password-stdin ccr.ccs.tencentyun.com
-
-    - name: Build and Push
-      run: |
-        docker build -t ccr.ccs.tencentyun.com/1223/yahoo_data:latest .
-        docker push ccr.ccs.tencentyun.com/1223/yahoo_data:latest
-
     - name: Deploy to K8S
       run: |
         kubectl apply -f deployment.yml
+        kubectl rollout restart deployment/yahoo-data-analyzer
