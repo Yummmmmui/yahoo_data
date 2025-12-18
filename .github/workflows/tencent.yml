@@ -1,65 +1,21 @@
-# This workflow will build a docker container, publish and deploy it to Tencent Kubernetes Engine (TKE) when there is a push to the "main" branch.
-#
-# To configure this workflow:
-#
-# 1. Ensure that your repository contains the necessary configuration for your Tencent Kubernetes Engine cluster,
-#    including deployment.yml, kustomization.yml, service.yml, etc.
-#
-# 2. Set up secrets in your workspace:
-#    - TENCENT_CLOUD_SECRET_ID with Tencent Cloud secret id
-#    - TENCENT_CLOUD_SECRET_KEY with Tencent Cloud secret key
-#    - TENCENT_CLOUD_ACCOUNT_ID with Tencent Cloud account id
-#    - TKE_REGISTRY_PASSWORD with TKE registry password
-#
-# 3. Change the values for the TKE_IMAGE_URL, TKE_REGION, TKE_CLUSTER_ID and DEPLOYMENT_NAME environment variables (below).
-
 name: Tencent Kubernetes Engine
 
 on:
   push:
     branches: [ "main" ]
 
-# Environment variables available to all jobs and steps in this workflow
 env:
-  TKE_IMAGE_URL: ccr.ccs.tencentyun.com/1223/yahoo_data
   TKE_REGION: ap-guangzhou
-  TKE_CLUSTER_ID: cls-4m9d09vg
-  DEPLOYMENT_NAME: yahoo-data-deploy
-
-permissions:
-  contents: read
+  TKE_CLUSTER_ID: cls-9oukskfs
 
 jobs:
-  setup-build-publish-deploy:
-    name: Setup, Build, Publish, and Deploy
+  deploy:
     runs-on: ubuntu-latest
-    environment: production
     steps:
-
     - name: Checkout
       uses: actions/checkout@v4
 
-    # Build
-    - name: Build Docker image
-      run: |
-        docker build -t ${TKE_IMAGE_URL}:${GITHUB_SHA} .
-        docker tag ${TKE_IMAGE_URL}:${GITHUB_SHA} ${TKE_IMAGE_URL}:latest
-
-    - name: Login TKE Registry
-      run: |
-        echo "${{ secrets.TENCENT_CLOUD_SECRET_KEY }}" | docker login -u ${{ secrets.TENCENT_CLOUD_SECRET_ID }} --password-stdin ccr.ccs.tencentyun.com
-    - name: Publish
-      run: |
-        docker push ${TKE_IMAGE_URL}:${GITHUB_SHA}
-        docker push ${TKE_IMAGE_URL}:latest
-
-    - name: Set up Kustomize
-      run: |
-        curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.3.0/kustomize_v5.3.0_linux_amd64.tar.gz
-        tar -zxf kustomize
-        chmod u+x ./kustomize
-
-    - name: Set up ~/.kube/config for connecting TKE cluster
+    - name: Set up TKE Credential
       uses: TencentCloud/tke-cluster-credential-action@v1
       with:
         secret_id: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
@@ -67,19 +23,16 @@ jobs:
         tke_region: ${{ env.TKE_REGION }}
         cluster_id: ${{ env.TKE_CLUSTER_ID }}
 
-    - name: Switch to TKE context
+    - name: Login TKE Registry
       run: |
-        kubectl config use-context ${TKE_CLUSTER_ID}-context-default
+        docker login -u ${{ secrets.TENCENT_CLOUD_SECRET_ID }} -p ${{ secrets.TENCENT_CLOUD_SECRET_KEY }} ccr.ccs.tencentyun.com
 
-    # Deploy the Docker image to the TKE cluster
-    - name: Deploy
+    - name: Build and Push
       run: |
-        ./kustomize edit set image ${TKE_IMAGE_URL}:${GITHUB_SHA}
-        ./kustomize build . | kubectl apply -f -
-        kubectl rollout status deployment/${DEPLOYMENT_NAME}
-        kubectl get services -o wide
+        docker build -t ccr.ccs.tencentyun.com/1223/yahoo_data:latest .
+        docker push ccr.ccs.tencentyun.com/1223/yahoo_data:latest
 
-    - name: Check Pod status
+    # 4. 直接在 K8S 里部署您的 7 个脚本
+    - name: Deploy to K8S
       run: |
-        kubectl get pods -l app=yahoo-data  # 查看项目Pod状态
-        kubectl logs -l app=yahoo-data --tail=100  # 查看最新100行日志
+        kubectl apply -f deployment.yml
