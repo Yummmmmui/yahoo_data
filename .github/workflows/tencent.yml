@@ -6,7 +6,7 @@ on:
 
 env:
   TKE_REGION: ap-guangzhou
-  TKE_CLUSTER_ID: cls-9oukskfs
+  TKE_CLUSTER_ID: cls-4m9d09vg
 
 jobs:
   deploy:
