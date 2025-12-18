@@ -5,9 +5,9 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 
 # 配置
-PG_USER = '你的用户名'
-PG_PASSWORD = '你的密码'
-PG_HOST = 'localhost'
+PG_USER = 'postgres'
+PG_PASSWORD = '123456'
+PG_HOST = '10.0.3.3'
 PG_PORT = '5432'
 PG_DB_NAME = 'yahoo_data'
 
@@ -270,4 +270,5 @@ def save_data_to_db(df: pd.DataFrame, ticker: str, country: str):
 # 初始化数据库结构
 if __name__ == '__main__':
     # 确保在运行迁移脚本前，数据库结构已存在
+
     create_table_if_not_exists()
