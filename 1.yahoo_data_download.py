@@ -230,17 +230,10 @@ def download(data_option=0, use_threads=1, sleep_time=1, repeat=3, download_opti
     print("正在加载数据...")
     conn = sqlite3.connect('yahoo_data.db')
     
-    if data_option == 0:
-        # 读全部：包括上海深圳、标普和多伦多
-        data = pd.read_sql("SELECT country, Yahoo_adj_Ticker_symbol, [currently use] FROM master", conn)
-    else:
-        # 读指定的国家
-        sheetname = {1: 'Shanghai_Shenzhen', 2: 'Snp500_Ru1000', 3: 'TSX'}
-        target = sheetname[data_option]
-        data = pd.read_sql(f"SELECT country, Yahoo_adj_Ticker_symbol, [currently use] FROM master WHERE country='{target}'", conn)
-    
-    conn.close()
-    print(f"成功加载 {len(data)} 条任务指令！")
+    query = "SELECT country, Yahoo_adj_Ticker_symbol, [currently use] FROM master"
+    data = pd.read_sql(query, conn_sqlite)
+    conn_sqlite.close()
+
     # 加载指定国家的数据
     else:
         sheetname = {1: 'Shanghai_Shenzhen', 2: 'Snp500_Ru1000', 3: 'TSX'}
@@ -360,3 +353,4 @@ if __name__ == '__main__':
     download(data_option, use_threads, sleep_time, repeat, download_method_choice)
 
     print(f"耗时: {time.time() - start_time:.2f}秒")
+
