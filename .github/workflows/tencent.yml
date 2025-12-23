@@ -27,6 +27,6 @@ jobs:
     - name: Deploy to K8S
       run: |
         kubectl apply -f deployment.yml \
-          --server=https://cls-4m9d09vg.ccs.tencent-cloud.com:443
+          --server=https://lb-3qflmbje-oue7lyitv9w34khz.clb.gz-tencentclb.com:443 \
           --insecure-skip-tls-verify \
           --validate=false
