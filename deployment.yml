@@ -15,4 +15,4 @@ spec:
       containers:
         - name: hello
           image: busybox
-          command: ["/bin/sh", "-c", "while true; do echo 'Hello Boss! System is Working!'; sleep 10; done"]
+          command: ["/bin/sh", "-c", "while true; do echo 'Hello World!'; sleep 10; done"]
