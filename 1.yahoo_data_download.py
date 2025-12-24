@@ -17,7 +17,6 @@ def downloader(ticker, start_date, end_date):
     下载逻辑：只管下载并保存为 CSV
     """
     try:
-        # 奶奶，我们用 Ticker.history 模式下载，比较稳定
         data = yf.Ticker(ticker).history(period="max", interval="1d", start=start_date, end=end_date)
         if data is not None and len(data) > 1:
             os.makedirs('new_csv/Snp500_Ru1000', exist_ok=True)
@@ -34,9 +33,7 @@ def download_main():
     print("正在从 Snp500_Ru1000 表加载股票清单...")
     try:
         conn = sqlite3.connect('yahoo_data.db')
-        # 核心：直接读取您导入的那张表 Snp500_Ru1000
-        # 奶奶，这里假设您的股票代码列名叫 Yahoo_adj_Ticker_symbol
-        query = "SELECT Yahoo_adj_Ticker_symbol FROM Snp500_Ru1000"
+        query = "SELECT Yahoo_adj_Ticker_symbol FROM master"
         data_df = pd.read_sql(query, conn)
         conn.close()
         
@@ -65,3 +62,4 @@ if __name__ == '__main__':
     start_time = time.time()
     download_main()
     print(f"总耗时: {time.time() - start_time:.2f}秒")
+
