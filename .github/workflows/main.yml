@@ -22,6 +22,6 @@ jobs:
         run: |
           pip install pandas yfinance requests
 
-      - name: 4. 开始下数据啦
+      - name: 4. 开始下载数据
         run: |
           python 1.yahoo_data_download.py
