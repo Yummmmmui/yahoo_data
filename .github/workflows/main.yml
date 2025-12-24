@@ -1,27 +1,27 @@
-name: Stock Data Auto Download
+name: Stock Data Auto Run
 
 on:
   push:
     branches: [ main ]
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 2 * * *' 
 
 jobs:
-  run-download:
+  run-python:
     runs-on: ubuntu-latest
     steps:
-      - name: 1. 获取最新代码
+      - name: 1. 准备代码
         uses: actions/checkout@v3
 
-      - name: 2. 安装 Python 环境
+      - name: 2. 准备 Python 环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: '3.9'
 
-      - name: 3. 安装下载工具
+      - name: 3. 安装下载数据需要的工具
         run: |
           pip install pandas yfinance requests sqlite3
 
-      - name: 4. 开始执行下载脚本
+      - name: 4. 开始下数据啦
         run: |
           python 1.yahoo_data_download.py
