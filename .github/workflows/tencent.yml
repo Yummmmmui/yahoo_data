@@ -22,12 +22,12 @@ jobs:
         secret_key: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
         tke_region: ${{ env.TKE_REGION }}
         cluster_id: ${{ env.TKE_CLUSTER_ID }}
-        cluster_endpoint: https://lb-m6ppmt4w-cgriql5mv90ntfyb.clb.gz-tencentclb.com:443
+        cluster_endpoint: https://lb-ryliibho-ytlfnz1iuk89rpsb.clb.gz-tencentclb.com:443
 
     - name: Deploy to K8S
       run: |
         kubectl apply -f deployment.yml \
-          --server=https://lb-m6ppmt4w-cgriql5mv90ntfyb.clb.gz-tencentclb.com:443 \
+          --server=https://lb-ryliibho-ytlfnz1iuk89rpsb.clb.gz-tencentclb.com:443 \
           --insecure-skip-tls-verify \
           --validate=false
 
